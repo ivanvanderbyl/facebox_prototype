@@ -7,7 +7,7 @@ This version will include animation and templates for Rails, released as a plugi
 
 Usage:
 Copy facebox.js into public/javascripts/
-Copy images to public/images/
+Copy images/facebox to public/images/
 
 This Prototype version is setup to automatically run when the window's load event is fired (see last three lines of this file),
 so usage is as easy as adding rel="facebox" to any link you want to use Facebox.
