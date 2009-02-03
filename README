@@ -1,13 +1,8 @@
-Facebox for Prototype
+h2.Facebox for Prototype
+
 based on Facebox by Chris Wanstrath -- http://famspam.com/facebox
 
-Originally ported to Prototype by Phil Burrows - http://blog.philburrows.com
+h3.Why another modal window? 
+Because we needed one which worked with Rails and Prototype.
 
-This version will include animation and templates for Rails, released as a plugin or gem somewhere down the track.
 
-Usage:
-Copy facebox.js into public/javascripts/
-Copy images/facebox to public/images/
-
-This Prototype version is setup to automatically run when the window's load event is fired (see last three lines of this file),
-so usage is as easy as adding rel="facebox" to any link you want to use Facebox.

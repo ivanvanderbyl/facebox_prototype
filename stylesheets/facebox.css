@@ -1,79 +1,93 @@
-#facebox .b {
-  background:url(/images/facebox/b.png);
+div#facebox {
+	position: absolute;
+	top: 0;
+	left: 0;
+	z-index: 100;
+	text-align: center;
+	overflow: hidden;
 }
 
-#facebox .tl {
-  background:url(/images/facebox/tl.png);
+#facebox div.top-left {
+	background: url(../images/facebox/corners.png) no-repeat 0 0;
+	height: 10px;
+	overflow: hidden;
+	padding-left: 10px;
 }
 
-#facebox .tr {
-  background:url(/images/facebox/tr.png);
+#facebox div.top-left div.top-right {
+	background: url(../images/facebox/corners.png) no-repeat right -22px;
+	height: 10px;
+	overflow: hidden;
+	padding-right: 10px;
 }
 
-#facebox .bl {
-  background:url(/images/facebox/bl.png);
+#facebox div.top-left div.top-right div.top-span {
+	background: url(../images/facebox/b.png) repeat-x left top;
+	height: 10px;
+	overflow: hidden;
 }
 
-#facebox .br {
-  background:url(/images/facebox/br.png);
+#facebox div.bottom-left {
+	background: url(../images/facebox/corners.png) no-repeat 0 -33px;
+	height: 10px;
+	overflow: hidden;
+	padding-left: 10px;
 }
 
-#facebox {
-  position: absolute;
-  top: 0;
-  left: 0;
-  z-index: 100;
-  text-align: center;
+#facebox div.bottom-left div.bottom-right {
+	background: url(../images/facebox/corners.png) no-repeat right -11px;
+	height: 10px;
+	overflow: hidden;
+	padding-right: 10px;
 }
 
-#facebox .popup {
-  position: relative;
+#facebox div.bottom-left div.bottom-right div.bottom-span {
+	background: url(../images/facebox/b.png) repeat-x left top;
+	height: 10px;
+	overflow: hidden;
 }
 
-#facebox table {
-  border-collapse: collapse;
+#facebox div.container-left {
+	background: url(../images/facebox/b.png) repeat-y left top;
+	padding-left: 10px;
 }
 
-#facebox td {
-  border-bottom: 0;
-  padding: 0;
+#facebox div.container-right {
+	background: url(../images/facebox/b.png) repeat-y right top;
+	padding-right: 10px;
 }
 
-#facebox .body {
-  padding: 10px;
-  background: #fff;
-  width: 370px;
+#facebox div.container {
+	background-color: white;
+	position: relative;
+	padding: 10px;
+	background: #fff;
+	width: 370px;
+	text-align: left;
 }
 
 #facebox .loading {
-  text-align: center;
+	text-align: center;
 }
 
 #facebox .image {
-  text-align: center;
+	text-align: center;
 }
 
 #facebox img {
-  border: 0;
-  margin: 0;
+	border: 0;
+	margin: 0;
 }
 
 #facebox .footer {
-  border-top: 1px solid #DDDDDD;
-  padding-top: 5px;
-  margin-top: 10px;
-  text-align: right;
+	border-top: 1px solid #DDDDDD;
+	padding-top: 5px;
+	margin-top: 10px;
+	text-align: right;
 }
 
 #facebox .footer img {
-  vertical-align: middle;
-}
-
-#facebox .tl, #facebox .tr, #facebox .bl, #facebox .br {
-  height: 10px;
-  width: 10px;
-  overflow: hidden;
-  padding: 0;
+	vertical-align: middle;
 }
 
 #facebox_overlay {
@@ -97,3 +111,4 @@
   position: absolute;
   height: expression(document.body.scrollHeight > document.body.offsetHeight ? document.body.scrollHeight : document.body.offsetHeight + 'px');
 }
+

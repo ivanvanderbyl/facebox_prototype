@@ -1,8 +1,14 @@
-// 
-//  Facebox
-//  
-//  Created by Ivan Vanderbyl on 2009-02-02.
-// 
+/*
+
+Facebox for Prototype
+
+Dependencies:
+ - Prototype
+ - Scriptaculous
+ 
+Created by Ivan Vanderbyl on 2009-02-02.
+
+*/
 
 var	facebox = function(link) {
 	new Facebox(link);
@@ -12,45 +18,59 @@ var Facebox = Class.create({
 	settings: {
 		opacity      		: 0.3,
     overlay      		: true,
-    loadingImage 		: '/images/facebox/loading.gif',
-    closeImage   		: '/images/facebox/closelabel.gif',
+    loadingImage 		: 'images/facebox/loading.gif',
+    closeImage   		: 'images/facebox/closelabel.gif',
     imageTypes   		: [ 'png', 'jpg', 'jpeg', 'gif' ],
 		panelOpacity 		: 1.0,
 		bindToEscapeKey	: true,
 		bindOverlayClick: true,
 		faceboxHtml  		: '\
-		  <div id="facebox" style="display:none;"> \
-		    <div class="popup"> \
-		      <table> \
-		        <tbody> \
-		          <tr> \
-		            <td class="tl"/><td class="b"/><td class="tr"/> \
-		          </tr> \
-		          <tr> \
-		            <td class="b"/> \
-		            <td class="body"> \
-		              <div class="content"> \
-		              </div> \
-		              <div class="footer"> \
-		                <a href="#" class="close"> \
-		                  <img src="/images/facebox/closelabel.gif" title="close" class="close_image" /> \
-		                </a> \
-		              </div> \
-		            </td> \
-		            <td class="b"/> \
-		          </tr> \
-		          <tr> \
-		            <td class="bl"/><td class="b"/><td class="br"/> \
-		          </tr> \
-		        </tbody> \
-		      </table> \
-		    </div> \
-		  </div>'
+		<div id="facebox" style="display:none;"> \
+			<div class="top-left"> \
+				<div class="top-right"> \
+					<div class="top-span"></div> \
+				</div> \
+			</div> \
+			<div class="container-left"> \
+				<div class="container-right"> \
+					<div class="container"> \
+						<div class="content"> \
+						</div> \
+						<div class="footer"> \
+							<a href="#" class="close"> \
+		            <img src="images/facebox/closelabel.gif" title="close" class="close_image" /> \
+		          </a> \
+						</div> \
+					</div> \
+				</div> \
+			</div> \
+			<div class="bottom-left"> \
+				<div class="bottom-right"> \
+					<div class="bottom-span"></div> \
+				</div> \
+			</div> \
+		</div> \
+		'
 	},
 	
-	initialize: function(link){
+	initialize: function(data, klass){
+		if ($('facebox_overlay')) return false
+		
 		this.contentEl = null;
 		this.loading();
+		
+		if (data.ajax) this.fillFaceboxFromAjax(data.ajax, klass)
+		else this.fillFaceboxFromAjax(data.href, klass)
+	},
+	
+	fillFaceboxFromAjax: function(href, klass){
+		bind = this
+		new Ajax.Request(href, {
+		  method: 'get',
+		  onComplete: function(transport) {
+				bind.reveal(transport.responseText, klass);
+		  }
+		});
 	},
 	
 	loading: function() {
@@ -64,25 +84,24 @@ var Facebox = Class.create({
 			elem.remove();
 		});
 		
-		$$('#facebox .body').first().childElements().invoke("hide");
+		$$('#facebox .container').first().childElements().invoke("hide");
 		
-		this.contentEl.insert({bottom: '<div class="loading"><img src="'+this.settings.loadingImage+'"/></div>'});
+		$$('#facebox .container').first().insert({bottom: '<div class="loading"><img src="'+this.settings.loadingImage+'"/></div>'});
 		
 		var pageScroll = this.getPageScroll();
 		$('facebox').show();
 		$('facebox').setStyle({
 			'top': pageScroll[1] + (this.getPageHeight() / 10) + 'px',
-			'left': ((document.viewport.getWidth() / 2) - $$('#facebox table')[0].getWidth()/2)+"px"
+			'left': ((document.viewport.getWidth() / 2) - $('facebox').getWidth()/2)+"px"
 		})
-		
-		
-		this.reveal("Hello World");
 	},
 	
 	// called one time to setup facebox on this page
 	init: function(settings) {
 		if (this.settings.inited) return true
 		else this.settings.inited = true
+		
+		document.fire('facebox:init');
 		
 		var imageTypes = this.settings.imageTypes.join('|')
 		this.settings.imageTypesRegexp = new RegExp('\.' + imageTypes + '$', 'i')
@@ -94,11 +113,6 @@ var Facebox = Class.create({
 		this.preload[1].src = this.settings.loadingImage;
 		
 		f = this;
-		$$('#facebox .b:first, #facebox .bl, #facebox .br, #facebox .tl, #facebox .tr').each(function(elem){
-			f.preload.push(new Image());
-			f.preload.slice(-1).src = elem.getStyle('background-image').replace(/url\((.+)\)/, '$1');
-		});
-		
 		Event.observe($$('#facebox .close').first(), 'click', function(e){
 			Event.stop(e);
 			f.close()
@@ -108,7 +122,7 @@ var Facebox = Class.create({
 			f.close()
 		});
 		
-		if (this.settings.bindToEscapeKey) document.observe('keydown', this.handleKeyPress.bindAsEventListener(this));
+		document.observe("facebox:close", this.close.bindAsEventListener(this));
 	},
 	
 	handleKeyPress: function(e){
@@ -116,36 +130,26 @@ var Facebox = Class.create({
 	},
 	
 	reveal: function(data, klass){
-		document.fire('beforeReveal.facebox', this)
+		document.fire('facebox:before_reveal', this)
+		
+		if (this.settings.bindToEscapeKey) document.observe('keydown', this.handleKeyPress.bindAsEventListener(this));
 		
 		if (klass) this.contentEl.addClassName(klass);
 		this.contentEl.innerHTML = data;
 		
-		if ($$('#facebox .loading').length == 1) $$('#facebox .loading')[0].remove();
+		if ($$('#facebox .loading').length == 1) $$('#facebox .loading').invoke("remove");
 		
-		$$('#facebox .body').first().childElements().each(function(elem,i){
+		$$('#facebox .container').first().childElements().each(function(elem,i){
 			elem.appear({duration: 0.1});
 		});
 		
 		$('facebox').setStyle({
-			'left': ((document.viewport.getWidth() / 2) - $$('#facebox table')[0].getWidth()/2)+"px"
+			'left': ((document.viewport.getWidth() / 2) - $('facebox').getWidth()/2)+"px"
 		})
 		
-		$(document).observe('keydown.facebox', function(e) {
-      if (e.keyCode == 27) this.close()
-      return true
-    })
-		
-		
-		// contentWrapper = $$('#facebox .content').first();
-		// if (klass) contentWrapper.addClassName(klass);
-		// contentWrapper.insert({bottom: data});
-		// load = $$('#facebox .loading').first();
-		// if(load) load.remove();
-		// $$('#facebox .body').first().childElements().each(function(elem,i){
-		// 	elem.show();
-		// });
-		// Event.observe(document, 'keypress', this.keyPressListener);
+		// document.observe('facebox:keydown', this.handleKeyPress.bindAsEventListener(this));
+		document.fire('facebox:reveal');
+		document.fire('facebox:afterReveal');
 	},
 	
 	getPageScroll: function() {
@@ -176,7 +180,7 @@ var Facebox = Class.create({
   },
 	
 	showOverlay: function(){
-		if (this.skipOverlay()) return
+		if (this.skipOverlay()) return false
 		
 		if ($('facebox_overlay') == null) 
       $$('body').first().insert({bottom: '<div id="facebox_overlay" class="facebox_hide"></div>'});
@@ -186,26 +190,28 @@ var Facebox = Class.create({
 		
 		if (this.settings.bindOverlayClick) overlay.observe('click', this.close.bindAsEventListener(this));
 
-    return false;
+    return true;
 	},
 	
 	hideOverlay: function(){
-		if (this.skipOverlay()) return
+		if (this.skipOverlay()) return false
 		
 		$('facebox_overlay').fade({duration: 0.2, afterFinish: function(effect) {
 			effect.element.removeClassName("facebox_overlayBG").addClassName("facebox_hide").remove();
 		}})
 		
-		return false
+		return true
 	},
 	
 	close: function(e){
 		bind = this
-		$$('#facebox')[0].fade({duration: 0.2, afterFinish: function(effect) {
+		
+		$('facebox').fade({duration: 0.2, afterFinish: function(effect) {
       effect.element.className = null;
 			effect.element.addClassName('content');
       bind.hideOverlay()
-    }})
+			document.stopObserving('keydown');
+    }});
 	},
 	
 	skipOverlay: function(){
@@ -213,7 +219,6 @@ var Facebox = Class.create({
   }
 	
 });
-
 
 Event.observe(window, 'load', function(e){
 	$$('a[rel*=facebox]').each(function(link) {	
