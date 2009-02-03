@@ -1,17 +1,25 @@
 h2. Facebox for Prototype
 
-Based on Facebox by Chris Wanstrath -- http://famspam.com/facebox
+Based on Facebox by "Chris Wanstrath":http://famspam.com/facebox
 
 h3. Why another modal window? 
 
 Because we needed one which worked with Rails and Prototype.
 
 Its super simple to use:
-# Just copy the following files to their respective places
- 	images/facebook
- 	javascripts/facebook.js
- 	stylesheets/facebook.css
+# Just copy the following files to their respective places<br>
+ 	images/facebook<br>
+ 	javascripts/facebook.js<br>
+ 	stylesheets/facebook.css<br>
 
-# Include the facebook.css into you template
+# Include the facebook.css into your template
 # Include the facebook.js into your template
+# Any links you want to load in a Facebox, just add the rel="facebox" attribute.
 
+h4. Features (Coming soon)
+
+* Rails helpers
+*	Ability to load images and existing content into window
+*	Better event handling
+
+Copyright © 2009 Ivan Vanderbyl.
